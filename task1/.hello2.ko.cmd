@@ -1,0 +1,1 @@
+cmd_/home/lieth_vel2356/eee335/Lab3/EEE335-Lab3-LocalRepo/task1/hello2.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3-LocalRepo/task1/hello2.ko /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3-LocalRepo/task1/hello2.o /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3-LocalRepo/task1/hello2.mod.o;  true

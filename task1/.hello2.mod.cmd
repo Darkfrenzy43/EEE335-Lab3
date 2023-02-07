@@ -1,0 +1,1 @@
+cmd_/home/lieth_vel2356/eee335/Lab3/EEE335-Lab3-LocalRepo/task1/hello2.mod := { echo  /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3-LocalRepo/task1/hello2.o;  echo; } > /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3-LocalRepo/task1/hello2.mod
