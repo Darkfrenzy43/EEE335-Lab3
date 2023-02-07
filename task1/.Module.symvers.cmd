@@ -1,0 +1,1 @@
+cmd_/home/lieth_vel2356/eee335/Lab3/EEE335-Lab3-LocalRepo/task1/Module.symvers := sed 's/\.ko$$/\.o/' /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3-LocalRepo/task1/modules.order | scripts/mod/modpost -m -a  -o /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3-LocalRepo/task1/Module.symvers -e -i Module.symvers   -T -
