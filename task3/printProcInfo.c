@@ -1,5 +1,25 @@
 
-// First, see if we can get this to build
+/* 
+
+    Description:
+
+        This module program is to print the pertinent info requested by the lab instruction for
+        lab 3 of the course EEE335.
+
+
+
+    Status:
+
+        - Begin implementing the program that prints the the requested information into
+        the special file in /proc. Refer to lab instructions and Notions for info to help. 
+
+
+
+    Authors: NCdt Eric Cho and OCdt Liethan Velasco
+
+    Version: created on February 19th 2023
+
+*/
 
 // --- Importing modules ---    WILL NOT BE USING MACROS FOR NOW
 
