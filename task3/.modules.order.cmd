@@ -1,1 +1,1 @@
-cmd_/home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/modules.order := {   echo /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/taskspy.ko; :; } | awk '!x[$$0]++' - > /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/modules.order
+cmd_/home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/modules.order := {   echo /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/taskspy.ko;   echo /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/printProcInfo.ko; :; } | awk '!x[$$0]++' - > /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/modules.order

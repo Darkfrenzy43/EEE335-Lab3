@@ -1,0 +1,1 @@
+cmd_/home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/printProcInfo.mod := { echo  /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/printProcInfo.o;  echo; } > /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/printProcInfo.mod

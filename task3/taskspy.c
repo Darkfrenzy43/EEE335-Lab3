@@ -37,8 +37,9 @@ void cleanup_module(void) {
 } */
 
 
-// ---- Provided code that lets us create and read a special file from /proc ----
+// ---- Provided code that lets us create and read a special file in /proc ----
 
+// Generates contents of the special file
 static int hello_show(struct seq_file *m, void *v) {
     
     seq_printf(m, "Hello My People!\n");
@@ -46,15 +47,17 @@ static int hello_show(struct seq_file *m, void *v) {
 
 }
 
-// Some function that runs hello_show in /proc?
+// Callback function called when special file opened. 
 static int hello_open(struct inode* inode, struct file* file) {
     
+    // This has something to do with contents of the special file
+    // being generated at once with a sequence file. idk.
     return single_open(file, hello_show, NULL);
 
 }
 
 
-// Creating some sort of struct
+// Struct that defines the above callback function for handling special file
 static const struct proc_ops hello_pops = {
     .proc_open = hello_open,
     .proc_read = seq_read,
@@ -65,7 +68,7 @@ static const struct proc_ops hello_pops = {
 // Some function that initializes something
 static int __init hello_init(void) {
 
-    // Creates the special file in /proc
+    // Creates the special file in /proc (parent_dir = NULL means it doesn't get put into subdirectory)
     proc_create("hello_file", 0, NULL, &hello_pops);
     return 0;
 
