@@ -1,1 +1,1 @@
-cmd_/home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/taskspy.mod := { echo  /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/taskspy.o;  echo; } > /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/taskspy.mod
+cmd_/home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/taskspy.mod := printf '%s\n'   taskspy.o | awk '!x[$$0]++ { print("/home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/"$$0) }' > /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/taskspy.mod
