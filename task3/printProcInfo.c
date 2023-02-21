@@ -10,11 +10,7 @@
 
     Status:
 
-        - Successfully was able to create that "special file" in /proc that
-        only shows all the processes' PIDs and command names. 
-
-        Will be working on the accessing the remaining information, and getting
-        the code formatted next. 
+        - Create function that converts elapsed time from nano seconds to the required format. 
 
 
 
@@ -36,79 +32,68 @@
 
 
 
+/* 
+    Description:
 
+        This function only writes all the task names and PIDs of all the current running tasks
+        into the special file passed in as <struct seq_file* m>.
 
-
-// --- Declaring our functions ---
-static void print_task_names(void);
-
-
-
-
-
-// ---- Defining our functions ----
-
-static void print_task_names(void) {
-
-    // Getting access to system's task_struct linked list
-    struct task_struct* first_task = &init_task;
-    struct task_struct* task_walker = first_task;
-
-    // Printing the PID as a sample for now
-    printk(KERN_ALERT "Here is the first task's name: %s\n", first_task -> comm);
-
-    // Getting the second task, printing it's PID
-    task_walker = next_task(task_walker);
-    printk(KERN_ALERT "Here is the second task's name: %s\n", task_walker -> comm);
-
-    while (task_walker != first_task) {
-
-        printk(KERN_ALERT "Here is task with PID %d's name: %s\n", task_walker -> pid, task_walker -> comm);
-        task_walker = next_task(task_walker);
-
-    }
-
-
-}
-
-
+*/
 // -- Functions that create special file --
-static int print_task_names_in_file(struct seq_file* m, void* v) {
+static int print_task_info_in_file(struct seq_file* m, void* v) {
 
     // Getting access to system's task_struct linked list
     struct task_struct* first_task = &init_task;
     struct task_struct* task_walker = first_task;
 
-    // Printing the PID as a sample for now
-    seq_printf(m, "Here is the first task's name: %s\n", first_task -> comm);
+    // Printing the header line in file
+    seq_printf(m, "   PID     PPID     UID       ELAPSED    STATE    NAME\n");
 
-    // Getting the second task, printing it's PID
-    task_walker = next_task(task_walker);
-    seq_printf(m, "Here is the second task's name: %s\n", task_walker -> comm);
+    do {
+        
+        // Getting the info of the current task
+        char* this_name = task_walker -> comm;
+        int this_pid = task_walker -> pid;
+        int this_ppid = task_walker -> real_parent -> pid;
+        kuid_t this_uid = task_walker -> cred -> uid; // <-- Apparently, supoed to be 1000 for new users
+        int this_state = task_walker -> __state;
 
-    while (task_walker != first_task) {
+        // convert elapsed time from nano to required format
+        unsigned int this_start_time = task_walker -> start_time;
+        
+        // Writing out the task info formatted
+        seq_printf(m, "%7d %8d %7ld %12d %8d   %s\n", 
+        this_pid, this_ppid, this_uid, this_start_time, this_state, this_name);
 
-        seq_printf(m, "Here is task with PID %d's name: %s\n", task_walker -> pid, task_walker -> comm);
+        // Move walker to next task
         task_walker = next_task(task_walker);
 
     }
+    while (task_walker != first_task);
+    
 
     return 0;
 
 }
 
 
-// -- Creating callback function --
-static int task_names_open(struct inode* inode, struct file* file) {
+/*
+    Description:
 
-    return single_open(file, print_task_names_in_file, NULL);
+        This function serves as the call back function fo rwhen the special file
+        named "task_names_file" is opened.
+
+*/
+static int task_info_open(struct inode* inode, struct file* file) {
+
+    return single_open(file, print_task_info_in_file, NULL);
 
 }
 
 
-// - Struct that defines callback function -
-static const struct proc_ops task_names_pops = {
-    .proc_open = task_names_open,
+// The struct which defines the above callback function for handling the special file
+static const struct proc_ops task_info_pops = {
+    .proc_open = task_info_open,
     .proc_read = seq_read,
     .proc_lseek = seq_lseek,
     .proc_release = single_release,
@@ -123,13 +108,13 @@ static const struct proc_ops task_names_pops = {
 */
 static int __init run_on_insert(void) {
 
-    printk(KERN_ALERT "Alright. this works.\n");
-
-    // creating the special file
-    proc_create("task_names_file", 0, NULL, &task_names_pops);
+    printk(KERN_ALERT "Module inserted into kernel.\n");
 
 
-    // Return 0 to indicate function successfully ran - module was loaded
+    // Creating the special file that contains the task names in /proc
+    proc_create("task_info_file", 0, NULL, &task_info_pops);
+
+    // Return 0 to indicate function successfully ran - IOW, module was loaded
     return 0;
 
 } 
@@ -142,18 +127,15 @@ static void __exit run_on_cleanup(void) {
     
     printk(KERN_ALERT "Removing the module now.\n");
 
-    // Removing the special entry
-    remove_proc_entry("task_names_file", NULL);
+    // Removing the special file from /proc
+    remove_proc_entry("task_info_file", NULL);
 
 } 
-
-
 
 
 // Marking the module initializer and exit functions with our custom ones
 module_init(run_on_insert);
 module_exit(run_on_cleanup);
-
 
 
 // Module license included to compile the module
