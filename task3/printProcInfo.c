@@ -8,9 +8,17 @@
 
 
 
+    Notes:
+
+        1 - The ELAPSED time of a process is the time between starting the operating system and 
+        the creation of the given process. It follows that the more recent a process is created,
+        the longer its ELAPSED time would be. 
+
+
+
     Status:
 
-        - Create function that converts elapsed time from nano seconds to the required format. 
+        - Find the letter equivalents of the process states
 
 
 
@@ -32,6 +40,19 @@
 
 
 
+// --- Defining MACROS ---
+#define DAY_NS  86400000000000
+#define HOUR_NS 3600000000000
+#define MIN_NS  60000000000
+#define SEC_NS  1000000000
+
+
+
+// --- Declaring functions ---
+void convert_nanotime(unsigned long int in_time, int equiv_time[]);
+
+
+
 /* 
     Description:
 
@@ -39,7 +60,6 @@
         into the special file passed in as <struct seq_file* m>.
 
 */
-// -- Functions that create special file --
 static int print_task_info_in_file(struct seq_file* m, void* v) {
 
     // Getting access to system's task_struct linked list
@@ -47,7 +67,11 @@ static int print_task_info_in_file(struct seq_file* m, void* v) {
     struct task_struct* task_walker = first_task;
 
     // Printing the header line in file
-    seq_printf(m, "   PID     PPID     UID       ELAPSED    STATE    NAME\n");
+    seq_printf(m, "    PID     PPID     UID            COMMAND      ELAPSED  STATE\n");
+
+    // Creating array to store equivalent days, hours, minutes, and seconds
+    int equiv_time[4];
+
 
     do {
         
@@ -58,12 +82,16 @@ static int print_task_info_in_file(struct seq_file* m, void* v) {
         kuid_t this_uid = task_walker -> cred -> uid; // <-- Apparently, supoed to be 1000 for new users
         int this_state = task_walker -> __state;
 
+        
+
         // convert elapsed time from nano to required format
-        unsigned int this_start_time = task_walker -> start_time;
+        unsigned long int this_start_time = task_walker -> start_time;
+        convert_nanotime(this_start_time, equiv_time);
+        
         
         // Writing out the task info formatted
-        seq_printf(m, "%7d %8d %7ld %12d %8d   %s\n", 
-        this_pid, this_ppid, this_uid, this_start_time, this_state, this_name);
+        seq_printf(m, "%7d %8d %7ld %18s %3d-%02d:%02d:%02d %6d   \n", 
+        this_pid, this_ppid, this_uid, this_name, equiv_time[0], equiv_time[1], equiv_time[2], equiv_time[3], this_state);
 
         // Move walker to next task
         task_walker = next_task(task_walker);
@@ -73,6 +101,52 @@ static int print_task_info_in_file(struct seq_file* m, void* v) {
     
 
     return 0;
+
+}
+
+
+/* 
+    Description:
+
+        This function converts nano seconds into its equivalent time in seconds,
+        minutes, hours, and days, in the format of [[dd-]hh:]mm:ss, where fields
+        in the square brackets are optional.
+
+    Arguments:
+        
+        <unsigned long int : in_time> : The time in nano seconds to be converted to the desired format.
+        
+        <int equiv_time[]> : Pointer to passed in array of size 4 to be loaded with the calculated equivalent time. 
+                                (0th index - days, 1st index - hours, 2nd index - minutes, 3rd index - seconds)
+
+*/
+void convert_nanotime(unsigned long int in_time, int equiv_time[]) {
+
+    // Declaring variables to be used in conversion
+    int days;
+    int hours;
+    int minutes;
+    int seconds;
+
+    
+    // Use dummy_var that will be used to compute equivalent time
+    unsigned long int remaining_time = in_time;
+
+    // Find how many days, hours, minutes, and seconds in_time is equivalent to.
+    // NOTE: Rounding down is already done by implicit conversion from float to int
+    days = remaining_time / DAY_NS;
+    remaining_time -= days * DAY_NS;
+    hours = remaining_time / HOUR_NS;
+    remaining_time -= hours * HOUR_NS;
+    minutes = remaining_time / MIN_NS;
+    remaining_time -= minutes * MIN_NS;
+    seconds = remaining_time / SEC_NS;
+
+    // Loading calculated times into equiv_time array
+    equiv_time[0] = days;
+    equiv_time[1] = hours;
+    equiv_time[2] = minutes;
+    equiv_time[3] = seconds;
 
 }
 
