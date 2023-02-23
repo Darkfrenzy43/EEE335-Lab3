@@ -18,7 +18,7 @@
 
     Status:
 
-        - Find the letter equivalents of the process states
+        
 
 
 
@@ -50,6 +50,7 @@
 
 // --- Declaring functions ---
 void convert_nanotime(unsigned long int in_time, int equiv_time[]);
+char get_state(unsigned int task_state);
 
 
 
@@ -78,21 +79,22 @@ static int print_task_info_in_file(struct seq_file* m, void* v) {
         // Getting the info of the current task
         char* this_name = task_walker -> comm;
         int this_pid = task_walker -> pid;
-        int this_ppid = task_walker -> real_parent -> pid;
+        int this_ppid = task_walker -> parent -> pid;
         kuid_t this_uid = task_walker -> cred -> uid; // <-- Apparently, supoed to be 1000 for new users
-        int this_state = task_walker -> __state;
-
         
+        // Obtain the task's state, and the letter equivalent
+        unsigned int state_number = task_walker -> __state;
+        char state_letter = get_state(state_number);
 
         // convert elapsed time from nano to required format
         unsigned long int this_start_time = task_walker -> start_time;
         convert_nanotime(this_start_time, equiv_time);
         
-        
         // Writing out the task info formatted
-        seq_printf(m, "%7d %8d %7ld %18s %3d-%02d:%02d:%02d %6d   \n", 
-        this_pid, this_ppid, this_uid, this_name, equiv_time[0], equiv_time[1], equiv_time[2], equiv_time[3], this_state);
+        seq_printf(m, "%7d %8d %7ld %18s %3d-%02d:%02d:%02d %6c   \n", 
+        this_pid, this_ppid, this_uid, this_name, equiv_time[0], equiv_time[1], equiv_time[2], equiv_time[3], state_letter);
 
+        
         // Move walker to next task
         task_walker = next_task(task_walker);
 
@@ -101,6 +103,53 @@ static int print_task_info_in_file(struct seq_file* m, void* v) {
     
 
     return 0;
+
+}
+
+
+/* 
+    Description:
+
+        This function takes in an task_state as its enumerated value, and
+        returns the corresponding character as what would be seen in the STATE column after running ps.
+
+        (R) TASK_RUNNING = 0 
+        (S) TASK_INTERRUPTIBLE = 1 
+        (D) TASK_UNINTERRUPTIBLE = 2 
+        (T) TASK_STOPPED = 260   
+        (I) TASK_IDLE = 1026 
+
+    Arguments:
+
+        <unsigned int task_state> : The task state extracted from the task_struct of a process.
+
+    Returns:
+        The corresponding character of the inputted task_state. Returns null if no corresponding state found. 
+
+*/
+char get_state(unsigned int task_state) {
+
+    // Use switch statement
+    switch (task_state){
+
+        case TASK_RUNNING:
+            return 'R';
+            break;
+        case TASK_INTERRUPTIBLE:
+            return 'S';
+            break;
+        case TASK_UNINTERRUPTIBLE:
+            return 'D';
+            break;
+        case TASK_STOPPED:
+            return 'T';
+            break;
+        case TASK_IDLE:
+            return 'I';
+            break;
+        default:
+            return '\0';
+    }
 
 }
 
