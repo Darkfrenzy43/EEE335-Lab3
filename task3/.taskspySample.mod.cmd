@@ -1,0 +1,1 @@
+cmd_/home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/taskspySample.mod := printf '%s\n'   taskspySample.o | awk '!x[$$0]++ { print("/home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/"$$0) }' > /home/lieth_vel2356/eee335/Lab3/EEE335-Lab3/task3/taskspySample.mod
