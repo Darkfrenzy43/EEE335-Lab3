@@ -3,8 +3,8 @@
 
     Description:
 
-        This module program is to print the pertinent info requested by the lab instruction for
-        lab 3 of the course EEE335.
+        This module program is to print the pertinent info of currently running tasks as detailed by 
+        the lab instruction of lab 3 of the course EEE335.
 
 
 
@@ -17,9 +17,6 @@
 
 
     Status:
-
-        
-
 
 
     Authors: NCdt Eric Cho and OCdt Liethan Velasco
@@ -41,6 +38,7 @@
 
 
 // --- Defining MACROS ---
+
 #define DAY_NS  86400000000000
 #define HOUR_NS 3600000000000
 #define MIN_NS  60000000000
@@ -49,10 +47,13 @@
 
 
 // --- Declaring functions ---
+
 void convert_nanotime(unsigned long int in_time, int equiv_time[]);
 char get_state(unsigned int task_state);
 
 
+
+// --- Defining functions ---
 
 /* 
     Description:
@@ -203,7 +204,7 @@ void convert_nanotime(unsigned long int in_time, int equiv_time[]) {
 /*
     Description:
 
-        This function serves as the call back function fo rwhen the special file
+        This function serves as the call back function for when the special file
         named "task_names_file" is opened.
 
 */
@@ -212,6 +213,7 @@ static int task_info_open(struct inode* inode, struct file* file) {
     return single_open(file, print_task_info_in_file, NULL);
 
 }
+
 
 
 // The struct which defines the above callback function for handling the special file
@@ -256,7 +258,7 @@ static void __exit run_on_cleanup(void) {
 } 
 
 
-// Marking the module initializer and exit functions with our custom ones
+// Marking the module initializer and exit functions with macros
 module_init(run_on_insert);
 module_exit(run_on_cleanup);
 
